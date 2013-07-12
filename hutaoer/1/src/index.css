@@ -1,0 +1,50 @@
+.main {
+  width: 900px;
+  margin: 0 auto;
+}
+.main .hd {
+  background: #cccccc;
+  width: 100%;
+}
+.main .hd h1 {
+  font-size: 33px;
+  font-weight: bold;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.main .bd .link-ul {
+  list-style: none;
+}
+.main .bd .link-ul li {
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  float: left;
+  text-align: center;
+  line-height: 90px;
+  -webkit-transition: background 0.2s linear;
+  overflow: hidden;
+}
+.main .bd .link-ul li:nth-child(1n) {
+  background: lightblue;
+}
+.main .bd .link-ul li:nth-child(2n) {
+  background: #cccccc;
+}
+.main .bd .link-ul li:nth-child(3n) {
+  background: lightpink;
+}
+.main .bd .link-ul li:nth-child(4n) {
+  background: lightgreen;
+}
+.main .bd .link-ul li:nth-child(5n) {
+  background: orange;
+}
+.main .bd .link-ul li:nth-child(6n) {
+  background: #bbbbbb;
+}
+.main .bd .link-ul li:hover {
+  background: yellow;
+}

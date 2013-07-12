@@ -1,0 +1,53 @@
+.main {
+	width: 900px;
+	margin: 0 auto;
+	.hd {
+		background: #ccc;
+		width: 100%;
+		h1 {
+			font-size: 33px;
+			font-weight: bold;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+	}
+	.bd {
+		.link-ul {
+			list-style: none;
+			li {
+				display: inline-block;
+				width: 90px;
+				height: 90px;
+				float: left;
+  				text-align: center;
+  				line-height: 90px;
+				-webkit-transition: background 0.2s linear;
+				overflow: hidden;
+			}
+			li:nth-child(1n) {
+				background: lightblue;
+			}
+			li:nth-child(2n){
+				background: #ccc;
+			}
+			li:nth-child(3n){
+				background: lightpink;
+			}
+			li:nth-child(4n){
+				background: lightgreen;
+			}
+			li:nth-child(5n){
+				background: orange;
+			}
+			li:nth-child(6n){
+				background: #bbb;
+			}
+			li:hover {
+				background: yellow;
+			}
+		}
+
+	}
+}

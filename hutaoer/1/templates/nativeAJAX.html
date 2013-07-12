@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>native ajax post and get</title>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="http://g.tbcdn.cn/kissy/k/1.3.0/kissy-min.js"></script>
+    <style>
+        .outer {
+            width: 300px;
+            height: 300px;
+            background: red;
+        }
+        .inner {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: green;
+            display: inline-block;
+        }
+        .des {
+            color: orange;
+        }
+        .warm {
+            color: red;
+        }
+        div {
+            height: 30px;
+            width: auto;
+        }
+        h1 {
+
+        }
+        h2 {
+            color: blue;
+        }
+        h3 {
+            color: #666;
+        } 
+        h4 {
+            color: green;
+        }
+        .point {
+            color: #D52BD5;
+            font-weight: bold;
+        }
+        .total {
+            color: #2BD5B3;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .know {
+            text-decoration: none;
+            cursor: default;
+        }
+        .list-box {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ajax的post方式和get方式比较，以及需要注意的地方</h1>
+    <h2 class="des">说明：测试所用的js框架为kissy,后端语言为php</h2>
+    <h3>写在前面</h3>
+    <p class=''>
+        目前我们可以将ajax请求的情形按照不同的类型进行分类，比如页面编码：utf-8 or gbk; ajax 传参方式 post or get; 传参的时候数据放到url中还是放到data属性中;参数中是否带有中文;后端通过get or post方式获取参数; 后端解析并返回值的编码为 utf-8 or gbk。通过排列组合一下，发现居然多达64种，但是页面编码来说的话，我们暂定为utf-8（因为页面编码为gbk的情况是可以类推的）。我们在ajax请求的时候怎么去避免乱码，post和get如何取舍，应该注意些什么问题呢?来跟我一起来探索一下！ 
+    </p>
+    <a href="#know">直接看结论</a>
+    <p>根据ajax的最终结果，我分类为正常情况，错误情况，乱码情况，特殊情况。虽然确定了页面的编码为utf-8，但是我们仍然有32种组合。我并不会把全部的情况都列出来，大家看着也很累，我只罗列一些有代表性的情况，大家举一反三都懂的啊。首先我们来看看最正常的情况吧！</p>
+    <pre>---------------------------------------------------------------------------</pre>
+    <h2 class="des">一、正常情况</h2>
+    <p>对于我来说，最正常的ajax使用，首先必须要求前端的传参方式和后端的获参方式相同，同为post或get, 如果有编码问题，前后端需要协调，前后端不能出现乱码</p>
+
+    <h3>1.页面编码utf-8, get方式请求, 参数放在url后面, 不带中文, 后端get方式获取, 返回为gbk编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="en_get2get_gbk" data-url="../async/get_ajax_gbk.php?id=123&name=taoer&content=kobe" id="J_en_get2get_gbk_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_en_get2get_gbk"></div>
+
+    <h3>2.页面编码utf-8, get方式请求, 参数放在url后面, 不带中文, 后端get方式获取, 返回为utf-8编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="en_get2get_utf" data-url="../async/get_ajax_utf.php?id=123&name=taoer&content=kobe" id="J_en_get2get_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_en_get2get_utf"></div>
+
+    <p class='point'>结论是：通过get方式发送的ajax请求，不包含中文的情况下，后端get方式获取, 后端的编码不论是utf-8还是gbk，功能都正常。<p>
+
+    <h3>3.页面编码utf-8, post方式请求, 参数放在data中, 不带中文, 后端post方式获取, 返回为utf-8编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="en_post2post_utf" data-url="../async/post_ajax_utf.php" id="J_en_post2post_utf_btn"/>
+        <span>参数放到data中，{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_en_post2post_utf"></div>
+
+    <h3>4.页面编码utf-8, post方式请求, 参数放在data中, 不带中文, 后端post方式获取, 返回为gbk编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="en_post2post_gbk" data-url="../async/post_ajax_gbk.php" id="J_en_post2post_gbk_btn"/>
+        <span>参数放到data中，{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_en_post2post_gbk"></div>
+    <p class='point'>结论是：通过post方式发送的ajax请求，不包含中文的情况下，后端post方式获取, 后端的编码不论是utf-8还是gbk，功能都正常。<p>
+    <p class="total">总结：前后端方式统一的情况下，很少会出错的！</p>
+    <pre>---------------------------------------------------------------------------</pre>
+    <h2 class="des">二、错误情况</h2>
+
+    <h3>5.页面编码utf-8, get方式请求, 参数放在url后面, 不带中文, 后端post方式获取, 返回为gbk编码<h3>
+    <h4>结果：返回数据为空或ajax请求失败</h4>
+    <p>
+        <input type="button" value="en_get2post_gbk" data-url="../async/post_ajax_gbk.php?id=123&name=taoer&content=kobe" id="J_en_get2post_gbk_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_en_get2post_gbk"></div>
+
+    <h3>6.页面编码utf-8, get方式请求, 参数放在url后面, 不带中文, 后端post方式获取, 返回为utf-8编码<h3>
+    <h4>结果：返回数据为空或ajax请求失败</h4>
+    <p>
+        <input type="button" value="en_get2post_utf" data-url="../async/post_ajax_utf.php?id=123&name=taoer&content=kobe" id="J_en_get2post_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_en_get2post_utf"></div>
+
+    <p class='point'>结论是：通过get方式发送的ajax请求，不包含中文的情况下，后端post方式获取, 后端的编码不论是utf-8还是gbk，功能失常。<p>
+
+    <h3>7.页面编码utf-8, post方式请求, 参数放在data中, 不带中文, 后端get方式获取, 返回为gbk编码<h3>
+    <h4>结果：返回数据为空或ajax请求失败</h4>
+    <p>
+        <input type="button" value="en_post2get_gbk" data-url="../async/get_ajax_gbk.php" id="J_en_post2get_gbk_btn"/>
+        <span>传值为:{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_en_post2get_gbk"></div>
+
+    <h3>8.页面编码utf-8, post方式请求, 参数放在data中, 不带中文, 后端get方式获取, 返回为utf-8编码<h3>
+    <h4>结果：返回数据为空或ajax请求失败</h4>
+    <p>
+        <input type="button" value="en_post2get_utf" data-url="../async/get_ajax_utf.php" id="J_en_post2get_utf_btn"/>
+        <span>传值为:{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_en_post2get_utf"></div>
+
+    <p class='point'>结论是：通过get方式发送的ajax请求，不包含中文的情况下，后端post方式获取, 后端的编码不论是utf-8还是gbk，功能失常。<p>
+    <p class="total">总结：前后端方式不统一的情况下，是很容易出错的！比如ajax请求失败，返回数据空值等情况。但是这个情况下，也有可能会得到正确的结果。您接着往下看。</p>
+    <pre>---------------------------------------------------------------------------</pre>
+
+    <h2 class="des">三、乱码情况</h2>
+
+    <h3>9.页面编码utf-8, get方式请求, 参数放在url后面, 带中文, 后端get方式获取, 返回为gbk编码<h3>
+    <h4>结果：<i class="warm">乱码</i></h4>
+    <p>
+        <input type="button" value="zh_get2get_gbk" data-url="../async/get_ajax_gbk.php?id=123&name=taoer&content=科比" id="J_zh_get2get_gbk_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_zh_get2get_gbk"></div>
+
+    <h3>10.页面编码utf-8, get方式请求, 参数放在url后面, 带中文, 后端get方式获取, 返回为utf-8编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="zh_get2get_utf" data-url="../async/get_ajax_utf.php?id=123&name=taoer&content=科比" id="J_zh_get2get_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面</span>
+    </p>
+    <div id="J_zh_get2get_utf"></div>
+
+    <p class='point'>结论是：通过get方式发送的ajax请求，不包含中文的情况下，后端get方式获取, 后端的编码不论是utf-8还是gbk，功能都正常。<p>
+
+    <h3>11.页面编码utf-8, post方式请求, 参数放在data中, 带中文, 后端post方式获取, 返回为utf-8编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="zh_post2post_utf" data-url="../async/post_ajax_utf.php" id="J_zh_post2post_utf_btn"/>
+        <span>传值放到data中，为:{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_zh_post2post_utf"></div>
+
+    <h3>12.页面编码utf-8, post方式请求, 参数放在data中, 带中文, 后端post方式获取, 返回为gbk编码<h3>
+    <h4>结果：<i class="warm">乱码</i></h4>
+    <p>
+        <input type="button" value="zh_post2post_gbk" data-url="../async/post_ajax_gbk.php" id="J_zh_post2post_gbk_btn"/>
+        <span>传值放到data中，为:{"id":123,"name":"taoer","content":"kobe"}</span>
+    </p>
+    <div id="J_zh_post2post_gbk"></div>
+    <p class='point'>结论：通过post方式发送的ajax请求，不包含中文的情况下，后端post方式获取, 后端的编码不论是utf-8还是gbk，功能都正常。<p>
+
+    <p class="total">总结：在执行ajax的过程中，我们不仅要保证前端传参的方式和后端获取参数的方式的统一，而且编码也最好统一。尤其是在ajax传参中包含中文的情况，更需要注意。前后端编码不同则容易造成乱码。</p>
+
+    <pre>---------------------------------------------------------------------------</pre>
+
+    <h2 class="des">四、比较特殊的情况</h2>
+
+    <h3>13.页面编码utf-8, post方式请求, 参数放在url后面, 不带中文, 后端get方式获取, 返回为utf编码<h3>
+    <h4>结果：可以<i class="warm">正常</i>返回数据</h4>
+    <p>
+        <input type="button" value="en_post_url2get_utf" data-url="../async/get_ajax_utf.php?id=123&name=taoer&content=kobe" id="J_en_post_url2get_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面；注意我用是post的方式，但是参数是写在url后面的，这应该是矛盾的！post传值，后端却通过get来获取值，却成功了。说明实际上，我们的传值还是通过get方式传到了后端。</span>
+    </p>
+    <div id="J_en_post_url2get_utf"></div>
+
+    <h3>14.页面编码utf-8, post方式请求, 参数放在url后面, 带中文, 后端get方式获取, 返回为gbk编码<h3>
+    <h4>结果：<i class="warm">乱码</i></h4>
+    <p>
+        <input type="button" value="en_post_url2get_gbk" data-url="../async/get_ajax_gbk.php?id=123&name=taoer&content=科比" id="J_en_post_url2get_gbk_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面；注意我用是post的方式，但是参数是写在url后面的，这应该是矛盾的！</span>
+    </p>
+    <div id="J_en_post_url2get_gbk"></div>
+    <p class="point">结论：虽然我采用的是post的方式传参，但是我的参数并没有写到data中，而是放到url后面，最终请求还是成功了。我把这个称为侥幸的成功。因为这个流程是不正常的。</p>
+
+    <h3>15.页面编码utf-8, post方式请求, 参数放在url后面, 不带中文, 后端post方式获取, 返回为utf编码<h3>
+    <h4>结果：后端post无法获取ajax请求的参数，也即是，虽然表面上我们ajax是通过post传值，但是我们的参数放在url中的，那么实际上在后端还是只能通过get来获取参数。</h4>
+    <p>
+        <input type="button" value="en_post_url2post_utf" data-url="../async/post_ajax_utf.php?id=123&name=taoer&content=kobe" id="J_en_post_url2post_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面；注意我用是post的方式，但是参数是写在url后面的，这应该是矛盾的！</span>
+    </p>
+    <div id="J_en_post_url2post_utf"></div>
+    <p class="point">结论：传值方式为post，参数放在url后面，后端用post获取，功能报错！</p>
+
+    <h3>16.页面编码utf-8, get方式请求, 参数放在data中, 不带中文, 后端post方式获取, 返回为utf编码<h3>
+    <h4>结果：后端post无法获取ajax请求的参数。返回值为空或ajax请求失败！</h4>
+    <p>
+        <input type="button" value="en_get_url2post_utf" data-url="../async/post_ajax_utf.php" id="J_en_get_url2post_utf_btn"/>
+        <span>传值为:id=123&name=taoer&content=kobe,参数放在url后面；注意我用是post的方式，但是参数是写在url后面的，这应该是矛盾的！</span>
+    </p>
+    <div id="J_en_get_url2post_utf"></div>
+    <p class="total">总结：第13和第14种情形的存在确实很奇葩，但是我们应该避免这种情况的出现。为了前后端同学的人生安全，采用正常的请求方式！如第、2、3、4种！</p>
+
+    <a name="know" href="javascript:;" class="know">结合玩客项目再总结一下</a>
+    <ul class="list-box">
+        <li>防微杜渐，不能容忍低级错误的出现。比如上述的第14种情形，就是我在玩客项目中写过的类似的传值代码。当时联调也很顺利，上线后也没有出bug。但是这周却出bug了。之前写代码的时候不够仔细。预防方法：多多review代码，尽量穷尽出bug的可能，并在代码上进行相应的处理。</li>
+        <li>前后端同学在联调ajax接口之前，应该协商好接口，传值方式，接受值的方式保持一致，最好的是做到能全站统一，维护也比较方便。</li>
+        <li>编码问题是ajax请求中容易出现的一个问题，因此需要前后端都统一编码。</li>
+        <li>post和get方式的取舍：post相比于get，能传更大的数据，更安全。get获取数据的时候会缓存，用于获取服务器的数据的时候比较适合。而post则更多的用于更新服务器上的数据。</li>
+        <li>还是post好！</li>
+    </ul>
+    <script type="text/javascript">
+        KISSY.ready(function(S) {
+            var E = S.Event, D = S.DOM, $ = S.one;
+            // 1
+
+            E.on('#J_en_get2get_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_get2get_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_en_get2get_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_get2get_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 2
+            E.on('#J_en_get2get_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_get2get_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_en_get2get_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_get2get_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 3
+            E.on('#J_en_post2post_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post2post_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"kobe"
+                    },
+                    success: function(data) {
+                        $('#J_en_post2post_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post2post_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 4
+            E.on('#J_en_post2post_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post2post_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"kobe"
+                    },
+                    success: function(data) {
+                        $('#J_en_post2post_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post2post_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 5
+            E.on('#J_en_get2post_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_get2post_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_en_get2post_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_get2post_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 6
+            E.on('#J_en_get2post_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_get2post_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_en_get2post_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_get2post_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 7
+            E.on('#J_en_post2get_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post2get_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"kobe"
+                    },
+                    success: function(data) {
+                        $('#J_en_post2get_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post2get_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 8
+            E.on('#J_en_post2get_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post2get_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"kobe"
+                    },
+                    success: function(data) {
+                        $('#J_en_post2get_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post2get_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 9
+            E.on('#J_zh_get2get_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_zh_get2get_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_zh_get2get_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_zh_get2get_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 10
+            E.on('#J_zh_get2get_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_zh_get2get_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_zh_get2get_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_zh_get2get_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 11
+            E.on('#J_zh_post2post_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_zh_post2post_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"科比"
+                    },
+                    success: function(data) {
+                        $('#J_zh_post2post_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_zh_post2post_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 12
+            E.on('#J_zh_post2post_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_zh_post2post_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        "id":123,
+                        "name":"taoer",
+                        "content":"科比"
+                    },
+                    success: function(data) {
+                        $('#J_zh_post2post_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_zh_post2post_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 13
+            E.on('#J_en_post_url2get_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post_url2get_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function(data) {
+                        $('#J_en_post_url2get_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post_url2get_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 14
+            E.on('#J_en_post_url2get_gbk_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post_url2get_gbk','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function(data) {
+                        $('#J_en_post_url2get_gbk').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post_url2get_gbk').append('ajax error!');
+                    }
+                })
+            });
+
+            // 15
+            E.on('#J_en_post_url2post_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_post_url2post_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function(data) {
+                        $('#J_en_post_url2post_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_post_url2post_utf').append('ajax error!');
+                    }
+                })
+            });
+
+            // 16
+            E.on('#J_en_get_url2post_utf_btn', 'click', function(e) {
+                var current = e.currentTarget;
+                var url = $(current).attr('data-url');
+                D.html('#J_en_get_url2post_utf','');
+                S.IO({
+                    url: url,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        $('#J_en_get_url2post_utf').append('后端获取数据并返回值:id值:'+data.id+';name值:'+data.name+';content值:'+data.content);
+                    },
+                    error: function() {
+                        $('#J_en_get_url2post_utf').append('ajax error!');
+                    }
+                })
+            });
+            
+        });
+
+        // function createXML() {
+        //     return (window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft XMLHTTP"));
+        // }
+
+        // function zh_get_click() {
+        //     var xhr = createXML();
+        //     xhr.open('get', "../async/test.php?id=123&name=taoer&words=kobe");
+        //     xhr.onreadystatechange = function() {
+        //         if (xhr.readyState == 4 && xhr.status == 200) {
+        //             var data = eval("("+xhr.responseText+")");
+        //             document.getElementById('J_zh_get').innerHTML = "id:"+data.id+" name:"+data.name+" words:"+data.words;
+        //         }
+        //     }
+        //     xhr.send(null);
+        // }
+        // var start = +new Date();
+        // setTimeout(
+        //     function(){
+        //         var end = +new Date();
+        //         console.log("end "+end);
+        //         console.log("start "+start);
+        //         console.log(end - start);
+        //     },
+        //     1000
+        // );
+        // while(new Date() - start < 1500) {
+        //     console.log(+new Date()+" hehe");
+        // };
+
+        // setTimeout(function() {
+        //     alert(1)
+        // },0)
+        // console.log('loop: '+ (a));
+        // console.log(+new Date());
+        // while(new Date() - start < 2000);
+        // console.log(+new Date());
+        // while(new Date() - start < 3000);
+        // console.log(+new Date());
+    </script>
+
+
+
+</body>
+</html>
