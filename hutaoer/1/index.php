@@ -12,21 +12,26 @@
     <div class="main">
         <div class="hd">
             <h1>hutaoer's demo and test!</h1>
+            <div class="nav">
+                <a href="https://github.com/hutao06051/mySinaappCode" class="git">my github</a>
+            </div>
         </div>
+        <div 
         <div class="bd">
 
-    <ul class='link-ul'>
-        <li>
-            <a href= './templates/isPC.html' target='_blank'>你是不是PC端?</a>
-        </li>
-        <li>
-            <a href= './templates/nativeAJAX.html' target='_blank'>ajax中的post与get</a>
-        </li>
-        <li>
-            <a href= './templates/publishFilter.php' target='_blank'>代码发布过滤小工具</a>
-        </li>
-    </ul>
-    
-    </div></div>
+        <ul class='link-ul'>
+            <li>
+                <a href= './templates/isPC.html' target='_blank'>你是不是PC端?</a>
+            </li>
+            <li>
+                <a href= './templates/nativeAJAX.html' target='_blank'>ajax中的post与get</a>
+            </li>
+            <li>
+                <a href= './templates/publishFilter.php' target='_blank'>代码发布过滤小工具</a>
+            </li>
+        </ul>
+        
+        </div>
+    </div>
 </body>
 </html>
